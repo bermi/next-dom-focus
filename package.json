@@ -1,6 +1,6 @@
 {
   "name": "next-dom-focus",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "Bermi Ferrer",
   "description": "Helper library to compute how equally sized DOM siblings are stacked on a grid",
   "main": "dist/index.js",
