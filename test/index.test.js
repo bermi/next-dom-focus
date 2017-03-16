@@ -627,4 +627,279 @@ describe("next-dom-focus", function () {
   });
 
 
+  const singleRowLayout = "\n" +
+    "\n        a1 b1 c1\n\n";
+  describe("When navigating on the grid" + singleRowLayout, function () {
+    const grid = [];
+    const gridHash = {};
+
+    before(function () {
+      function mockDomEl(name, offsetTop) {
+        const el = {
+          name: name,
+          offsetTop: offsetTop,
+          parentNode: {
+            childNodes: grid
+          }
+        };
+        gridHash[name] = el;
+        grid.push(el);
+      }
+
+      mockDomEl("a1", 0);
+      mockDomEl("b1", 0);
+      mockDomEl("c1", 0);
+    });
+
+
+    context("element position detection should", function () {
+      const gridInfo = {};
+
+      before(function () {
+        Object.keys(gridHash).forEach(function (name) {
+          gridInfo[name] = getVerticalMovementInfo(gridHash[name]);
+        });
+      });
+
+
+      it("should include totalColumns on info", function () {
+        _.forEach(gridInfo, function (info) {
+          expect(info.totalColumns).to.be(3);
+        });
+      });
+
+      it("should include totalElements on info", function () {
+        _.forEach(gridInfo, function (info) {
+          expect(info.totalElements).to.be(3);
+        });
+      });
+
+      it("should include totalRows on info", function () {
+        _.forEach(gridInfo, function (info) {
+          expect(info.totalRows).to.be(1);
+        });
+      });
+
+      it("should include elIndex on info", function () {
+        _.forEach(gridInfo, function (info) {
+          expect(info.elIndex).to.be.below(info.totalElements);
+          expect(info.elIndex).to.be.above(-1);
+        });
+      });
+
+      it("should include elRow on info", function () {
+        _.forEach(gridInfo, function (info, name) {
+          const match = name.match(/(\w+)(\d+)/);
+          expect(match[1] + info.elRow).to.be(match[1] + match[2]);
+        });
+      });
+
+      it("should include leftOffset on info", function () {
+        const offsets = {
+          a: 0,
+          b: 1,
+          c: 2
+        };
+        _.forEach(gridInfo, function (info, name) {
+          const match = name.match(/(\w+)(\d+)/);
+          expect(name + "(" + info.leftOffset + ")")
+            .to.be(name + "(" + offsets[match[1]] + ")");
+        });
+      });
+
+      it("should include previousRow on info", function () {
+        const previousRows = {
+          a1: 1,
+          b1: 1,
+          c1: 1
+        };
+
+        _.forEach(gridInfo, function (info, name) {
+          expect(name + "(" + info.previousRow + ")")
+            .to.be(name + "(" + previousRows[name] + ")");
+        });
+      });
+
+      it("should include nextRow on info", function () {
+        const nextRows = {
+          a1: 1,
+          b1: 1,
+          c1: 1
+        };
+
+        _.forEach(gridInfo, function (info, name) {
+          expect(name + "(" + info.nextRow + ")")
+            .to.be(name + "(" + nextRows[name] + ")");
+        });
+      });
+
+    });
+
+
+    context("and focus is on \"a1\" it", function () {
+
+      it("should focus \"c1\" when going to the \"left\"", function () {
+        expect(getDomElement(gridHash.a1, "left").name).to.eql("c1");
+      });
+
+      it("should focus \"b1\" when going to the \"right\"", function () {
+        expect(getDomElement(gridHash.a1, "right").name).to.eql("b1");
+      });
+
+    });
+
+    context("and focus is on \"b1\" it", function () {
+
+      it("should focus \"a1\" when going to the \"left\"", function () {
+        expect(getDomElement(gridHash.b1, "left").name).to.eql("a1");
+      });
+
+      it("should focus \"c1\" when going to the \"right\"", function () {
+        expect(getDomElement(gridHash.b1, "right").name).to.eql("c1");
+      });
+    });
+
+    context("and focus is on \"c1\" it", function () {
+
+      it("should focus \"b1\" when going to the \"left\"", function () {
+        expect(getDomElement(gridHash.c1, "left").name).to.eql("b1");
+      });
+
+      it("should focus \"a1\" when going to the \"right\"", function () {
+        expect(getDomElement(gridHash.c1, "right").name).to.eql("a1");
+      });
+    });
+
+  });
+
+  const singleRowTwoColsLayout = "\n" +
+    "\n        a1 b1\n\n";
+  describe("When navigating on the grid" + singleRowTwoColsLayout, function () {
+    const grid = [];
+    const gridHash = {};
+
+    before(function () {
+      function mockDomEl(name, offsetTop) {
+        const el = {
+          name: name,
+          offsetTop: offsetTop,
+          parentNode: {
+            childNodes: grid
+          }
+        };
+        gridHash[name] = el;
+        grid.push(el);
+      }
+
+      mockDomEl("a1", 0);
+      mockDomEl("b1", 0);
+    });
+
+
+    context("element position detection should", function () {
+      const gridInfo = {};
+
+      before(function () {
+        Object.keys(gridHash).forEach(function (name) {
+          gridInfo[name] = getVerticalMovementInfo(gridHash[name]);
+        });
+      });
+
+
+      it("should include totalColumns on info", function () {
+        _.forEach(gridInfo, function (info) {
+          expect(info.totalColumns).to.be(2);
+        });
+      });
+
+      it("should include totalElements on info", function () {
+        _.forEach(gridInfo, function (info) {
+          expect(info.totalElements).to.be(2);
+        });
+      });
+
+      it("should include totalRows on info", function () {
+        _.forEach(gridInfo, function (info) {
+          expect(info.totalRows).to.be(1);
+        });
+      });
+
+      it("should include elIndex on info", function () {
+        _.forEach(gridInfo, function (info) {
+          expect(info.elIndex).to.be.below(info.totalElements);
+          expect(info.elIndex).to.be.above(-1);
+        });
+      });
+
+      it("should include elRow on info", function () {
+        _.forEach(gridInfo, function (info, name) {
+          const match = name.match(/(\w+)(\d+)/);
+          expect(match[1] + info.elRow).to.be(match[1] + match[2]);
+        });
+      });
+
+      it("should include leftOffset on info", function () {
+        const offsets = {
+          a: 0,
+          b: 1
+        };
+        _.forEach(gridInfo, function (info, name) {
+          const match = name.match(/(\w+)(\d+)/);
+          expect(name + "(" + info.leftOffset + ")")
+            .to.be(name + "(" + offsets[match[1]] + ")");
+        });
+      });
+
+      it("should include previousRow on info", function () {
+        const previousRows = {
+          a1: 1,
+          b1: 1
+        };
+
+        _.forEach(gridInfo, function (info, name) {
+          expect(name + "(" + info.previousRow + ")")
+            .to.be(name + "(" + previousRows[name] + ")");
+        });
+      });
+
+      it("should include nextRow on info", function () {
+        const nextRows = {
+          a1: 1,
+          b1: 1
+        };
+
+        _.forEach(gridInfo, function (info, name) {
+          expect(name + "(" + info.nextRow + ")")
+            .to.be(name + "(" + nextRows[name] + ")");
+        });
+      });
+
+    });
+
+
+    context("and focus is on \"a1\" it", function () {
+
+      it("should focus \"b1\" when going to the \"left\"", function () {
+        expect(getDomElement(gridHash.a1, "left").name).to.eql("b1");
+      });
+
+      it("should focus \"b1\" when going to the \"right\"", function () {
+        expect(getDomElement(gridHash.a1, "right").name).to.eql("b1");
+      });
+
+    });
+
+    context("and focus is on \"b1\" it", function () {
+
+      it("should focus \"a1\" when going to the \"left\"", function () {
+        expect(getDomElement(gridHash.b1, "left").name).to.eql("a1");
+      });
+
+      it("should focus \"a1\" when going to the \"right\"", function () {
+        expect(getDomElement(gridHash.b1, "right").name).to.eql("a1");
+      });
+    });
+
+  });
+
 });
